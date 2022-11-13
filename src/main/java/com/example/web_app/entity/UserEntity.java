@@ -3,19 +3,18 @@ package com.example.web_app.entity;
 import lombok.AllArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @AllArgsConstructor
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30, name = "firstname")
+    @Column(nullable = false, length = 30, name = "firstdddName")
     private String firstName;
-    @Column(nullable = false, length = 30,  name = "lastname")
+    @Column(nullable = false, length = 30, name = "lastName")
     private String lastName;
     @Column(nullable = false, unique = true, length = 45)
     private String email;
@@ -23,7 +22,13 @@ public class UserEntity {
     private String password;
 
     public UserEntity() {
+    }
 
+    public UserEntity(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
     }
 
 

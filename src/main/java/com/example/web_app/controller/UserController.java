@@ -2,12 +2,11 @@ package com.example.web_app.controller;
 
 
 import com.example.web_app.entity.UserEntity;
+import com.example.web_app.exception.MyException;
 import com.example.web_app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,44 +14,33 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-//    {
-//        "firstname": "{{$randomFirstName}}",
-//            "lastname": "{{$randomLastName}}",
-//            "email": "{{$randomEmail}}",
-//            "password": "{{$randomPassword}}"
-//    }
+    @PostMapping("/signup")
+    public ResponseEntity<String> SignUpPage(@RequestParam("firstName") String firstName,
+                                             @RequestParam("lastName") String lastName,
+                                             @RequestParam("email") String email,
+                                             @RequestParam("password") String password) {
 
-    @PostMapping("/new")
-    public ResponseEntity registration (@RequestBody UserEntity user){
         try {
-            userService.save(user);
-            return ResponseEntity.ok("User was created ");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body("Error... (");
-        }
-    }
-    @GetMapping("/list")
-    public ResponseEntity showUserList(){
-        try {
-            List<UserEntity> userList = userService.listAll();
-            String str = "";
-            for (UserEntity u : userList){
-                str = str + u.toString() + "\n";
-                System.out.println(str);
-            }
-            return ResponseEntity.ok("Users : \n" + str);
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body("Error... (");
+            userService.signUp(firstName, lastName, email, password);
+            return ResponseEntity.ok("User was added ");
+        } catch (MyException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("unknown error :(");
         }
     }
 
-    @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<?> deleteUser (@PathVariable Long id) {
+    @PostMapping("/signin")
+    public ResponseEntity SignInPage(@RequestParam("email") String email,
+                                     @RequestParam("password") String password) {
         try {
-            userService.delete(id);
-            return ResponseEntity.ok("User was deleted  \n");
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body("Error... (");
+            UserEntity user = userService.signIn(email, password);
+            return ResponseEntity.ok("User " + user.getEmail() + "log in :)");
+        } catch (MyException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("unknown error :(");
         }
     }
+
 }
